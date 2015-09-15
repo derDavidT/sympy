@@ -87,7 +87,10 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         # replace them with suitable subs
         o = o.replace(r'\operatorname', '')
         o = o.replace(r'\overline', r'\bar')
-        return latex_to_png(o)
+        try:
+            return latex_to_png(o)
+        except:
+            return latex_to_png(r'cannot render this')
 
     def _can_print_latex(o):
         """Return True if type o can be printed with LaTeX.
