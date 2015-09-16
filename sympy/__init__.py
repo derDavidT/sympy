@@ -33,7 +33,7 @@ del sys
 def __sympy_debug():
     # helper function so we don't import os globally
     import os
-    debug_str = os.getenv('SYMPY_DEBUG', 'False')
+    debug_str = os.getenv('SYMPY_DEBUG', 'True')
     if debug_str in ('True', 'False'):
         return eval(debug_str)
     else:

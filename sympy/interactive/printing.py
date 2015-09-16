@@ -83,14 +83,12 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         return exprbuffer.getvalue()
 
     def _matplotlib_wrapper(o):
+        debug("_matplotlib_wrapper:", "called with %s" % o)
         # mathtext does not understand certain latex flags, so we try to
         # replace them with suitable subs
         o = o.replace(r'\operatorname', '')
         o = o.replace(r'\overline', r'\bar')
-        try:
-            return latex_to_png(o)
-        except:
-            return latex_to_png(r'cannot render this')
+        return latex_to_png(o)
 
     def _can_print_latex(o):
         """Return True if type o can be printed with LaTeX.
@@ -116,6 +114,7 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         return False
 
     def _print_latex_png(o):
+        debug("_print_latex_png:", "called with %s" % o)
         """
         A function that returns a png rendered by an external latex
         distribution, falling back to matplotlib rendering
@@ -133,16 +132,20 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         """
         A function that returns a png rendered by mathtext
         """
+        debug("_print_latex_matplotlib:", "called with %s" % o)
         if _can_print_latex(o):
             s = latex(o, mode='inline')
             try:
                 return _matplotlib_wrapper(s)
             except Exception:
+                debug("_print_latex_matplotlib:",
+                      "exeption raised")
                 # Matplotlib.mathtext cannot render some things (like
                 # matrices)
                 return None
 
     def _print_latex_text(o):
+        debug("_print_latex_text:", "called with %s" % o)
         """
         A function to generate the latex representation of sympy expressions.
         """
