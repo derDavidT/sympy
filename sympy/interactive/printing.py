@@ -88,7 +88,13 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         # replace them with suitable subs
         o = o.replace(r'\operatorname', '')
         o = o.replace(r'\overline', r'\bar')
-        return latex_to_png(o)
+        try:
+            return latex_to_png(o)
+        except Exception:
+            debug("_matplotlib_wrapper:", "exeption raised")
+            # Matplotlib.mathtext cannot render some things (like
+            # matrices)
+            return None
 
     def _can_print_latex(o):
         """Return True if type o can be printed with LaTeX.
@@ -126,6 +132,8 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
             except RuntimeError:
                 if latex_mode != 'inline':
                     s = latex(o, mode='inline')
+                debug("_print_latex_png(o):",
+                      "calling _matplotlib_wrapper")
                 return _matplotlib_wrapper(s)
 
     def _print_latex_matplotlib(o):
@@ -135,14 +143,7 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
         debug("_print_latex_matplotlib:", "called with %s" % o)
         if _can_print_latex(o):
             s = latex(o, mode='inline')
-            try:
-                return _matplotlib_wrapper(s)
-            except Exception:
-                debug("_print_latex_matplotlib:",
-                      "exeption raised")
-                # Matplotlib.mathtext cannot render some things (like
-                # matrices)
-                return None
+            return _matplotlib_wrapper(s)
 
     def _print_latex_text(o):
         debug("_print_latex_text:", "called with %s" % o)
@@ -153,6 +154,7 @@ def _init_ipython_printing(ip, stringify_func, use_latex, euler, forecolor,
             s = latex(o, mode='plain')
             s = s.replace(r'\dag', r'\dagger')
             s = s.strip('$')
+            debug("_print_latex_text:", "returns $$%s$$" % s)
             return '$$%s$$' % s
 
     def _result_display(self, arg):
